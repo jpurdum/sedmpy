@@ -3010,7 +3010,7 @@ def get_p18obsdata(obsdate):
 
     # 2. Get the data from the link
     page = requests.get(
-        'http://nera.palomar.caltech.edu/P18_seeing/seeing_log_%s.log'
+        'http://algol.palomar.caltech.edu/P18_seeing/seeing_log_%s.log'
         % p18obsdate)
     data = page.content.decode("ISO-8859-1")
 
