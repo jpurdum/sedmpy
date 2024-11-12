@@ -220,7 +220,6 @@ def create_masterflat(flatdir=None, biasdir=None, plot=True, twilight=False,
 
     if plot and not os.path.isdir("reduced/flats"):
         os.makedirs("reduced/flats")
-
     if len(glob.glob("Flat_rc_dome*norm.fits")) == 8 and not twilight:
         logger.info("Dome Master Flats exist!")
         return
@@ -1254,7 +1253,7 @@ if __name__ == '__main__':
             logger.error("problems opening file %s" % f)
 
     create_masterbias(mydir)
-    logger.info("Create masterflat", mydir)
+    # logger.info("Create masterflat", mydir)
     create_masterflat(mydir)
 
     if len(myfiles) == 0:
@@ -1291,7 +1290,7 @@ if __name__ == '__main__':
                         logger.info("Getting quick %s-band mag for %s in %s"
                                     % (target_filter, target_name, rf))
                         target_mag, target_magerr, std_zp = get_target_mag(rf, zeropoint=phot_zp)
-                        logger.info("Quick MAG = %.3f +- %.3f" % (target_mag, target_magerr))
+                        # logger.info("Quick MAG = %.3f +- %.3f" % (target_mag, target_magerr))
                         if std_zp is not None:
                             logger.info("Quick MAG_ZP: %.3f" % std_zp)
                             if phot_zp[target_filter] is None:

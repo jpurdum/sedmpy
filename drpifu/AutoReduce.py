@@ -90,7 +90,12 @@ _nomfs = sedm_cfg['nominal_file_size']
 def link_refcube(curdir='./', date_str=None):
     # source (ref) and destination
     # srcpre = '/data/sedmdrp/redux/ref/20230407_'
-    srcpre = '/data/sedmdrp/redux/ref/20231220_'
+    # srcpre = '/data/sedmdrp/redux/ref/20231220_'
+    # srcpre = '/data/sedmdrp/redux/ref/20240529_'
+    # srcpre = '/data/sedmdrp/redux/ref/20240708_'
+    # srcpre = '/data/sedmdrp/redux/ref/20240814_'
+    # srcpre = '/data/sedmdrp/redux/ref/20240923_'
+    srcpre = '/data/sedmdrp/redux/ref/20241010_'
     dstpre = curdir + '/%s_' % date_str
     grid = 'HexaGrid.pkl'
     trace = 'TraceMatch.pkl'
@@ -121,14 +126,14 @@ def cube_ready(caldir='./', cur_date_str=None, avrmslim=75.0):
         tmf = 'TraceMatch.pkl'
         tmmf = 'TraceMatch_WithMasks.pkl'
         hgf = 'HexaGrid.pkl'
-        wsf = 'WaveSolution.pkl'
+        wsf = 'WaveSolution.parquet'
         fff = 'Flat.fits'
         statf = 'wavesolution_stats.txt'
     else:
         tmf = cur_date_str + '_TraceMatch.pkl'
         tmmf = cur_date_str + '_TraceMatch_WithMasks.pkl'
         hgf = cur_date_str + '_HexaGrid.pkl'
-        wsf = cur_date_str + '_WaveSolution.pkl'
+        wsf = cur_date_str + '_WaveSolution.parquet'
         fff = cur_date_str + '_Flat.fits'
         statf = cur_date_str + '_wavesolution_stats.txt'
 
@@ -546,7 +551,7 @@ def update_calibration(utdate, src_dir=_reduxpath):
         else:
             logging.info("spec cal item not found: %s" % tracematch_withmasks)
 
-        wavesolution = os.path.join(src, utdate + '_WaveSolution.pkl')
+        wavesolution = os.path.join(src, utdate + '_WaveSolution.parquet')
         if os.path.exists(wavesolution):
             spec_calib_dict['wavesolution'] = wavesolution
         else:
@@ -595,8 +600,8 @@ def update_calibration(utdate, src_dir=_reduxpath):
                     if 'NSpax' in stat_line:
                         nspax = int(stat_line.split()[-1])
                         logging.info("Dome NSpax = %d" % nspax)
-                        if spec_calib_dict['nspaxels'] == 0:
-                            spec_calib_dict['nspaxels'] = nspax
+                        # if spec_calib_dict['nspaxels'] == 0:
+                        #    spec_calib_dict['nspaxels'] = nspax
                     elif 'MinWid' in stat_line:
                         spec_calib_dict['width_rms_min'] = \
                             float(stat_line.split()[-1])
@@ -2097,6 +2102,15 @@ def obs_loop(rawlist=None, redd=None, check_precal=True, indir=None,
                    os.path.join(outdir, cur_date_str + '_HexaGrid.pkl')):
                     # Process wavelengths
                     start_time = time.time()
+
+                    # from dask.distributed import Client
+                    # client = Client(threads_per_worker=2, n_workers=32)
+                    # Build the wavesolution with pysedm v-0.40.0
+                    cmd = ("ccd_to_cube.py", cur_date_str, "--wavesol")
+                    logging.info(" ".join(cmd))
+                    subprocess.call(cmd)
+
+                    """
                     # Spawn nsub sub-processes to solve wavelengths faster
                     nsub = 8
                     cmd = ("derive_wavesolution.py", cur_date_str,
@@ -2124,9 +2138,10 @@ def obs_loop(rawlist=None, redd=None, check_precal=True, indir=None,
                     # Merge the solutions
                     subprocess.call(("derive_wavesolution.py", cur_date_str,
                                      "--merge"))
+                    """
                 procw_time = int(time.time() - start_time)
                 if os.path.exists(
-                   os.path.join(outdir, cur_date_str + '_WaveSolution.pkl')):
+                   os.path.join(outdir, cur_date_str + '_WaveSolution.parquet')):
                     # Process flat
                     start_time = time.time()
                     cmd = ("ccd_to_cube.py", cur_date_str, "--flat")
@@ -2168,7 +2183,7 @@ def obs_loop(rawlist=None, redd=None, check_precal=True, indir=None,
             nctm = find_recent(redd, '_TraceMatch_WithMasks.pkl', outdir,
                                cur_date_str)
             ncg = find_recent(redd, '_HexaGrid.pkl', outdir, cur_date_str)
-            ncw = find_recent(redd, '_WaveSolution.pkl', outdir, cur_date_str)
+            ncw = find_recent(redd, '_WaveSolution.parquet', outdir, cur_date_str)
             ncf = find_recent(redd, '_Flat.fits', outdir, cur_date_str)
             if not bias_ready(outdir):
                 ncb = find_recent_bias(redd, 'bias0.1.fits', outdir)
@@ -2529,4 +2544,4 @@ if __name__ == '__main__':
            check_precal=(not args.skip_precal), indate=args.date,
            piggyback=args.piggyback, local=args.local, nodb=arg_nodb,
            nopush_marshal=arg_nopush_marshal, nopush_slack=arg_nopush_slack,
-           oldext=args.oldext, use_refcube=True)  # args.use_refcube)
+           oldext=args.oldext, use_refcube=False)  # args.use_refcube)
