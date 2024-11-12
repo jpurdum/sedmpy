@@ -1,6 +1,6 @@
 #!/bin/bash -f
 
-source $HOME/miniconda3/bin/activate astroconda
+source $HOME/miniconda3/bin/activate sedm
 
 SEDMPATH=$HOME/sedmpy
 
@@ -19,7 +19,7 @@ then
     ipython --pylab
 else
     case $1 in
-        what) python $SEDMPATH/drpifu/What.py "$@";;
+        \what) python $SEDMPATH/drpifu/What.py "$@";;
         plan) shift 1; python $SEDMPATH/drpifu/Plan.py "$@";;
         imgplan) shift 1; python $SEDMPATH/drpimg/ImgPlan.py "$@";;
         redex) shift 1; python $SEDMPATH/drpifu/RedEx.py "$@";;

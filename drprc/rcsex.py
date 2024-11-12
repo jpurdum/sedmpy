@@ -542,21 +542,21 @@ def analyse_image(sexfile, arcsecpix=0.394, is_rccam=True):
 
     """
 
-    s = np.genfromtxt(sexfile, comments="#", dtype=[("x", np.float),
-                                                    ("y", np.float),
-                                                    ("ra", np.float),
-                                                    ("dec", np.float),
-                                                    ("mag", np.float),
-                                                    ("magerr", np.float),
-                                                    ("fwhm_world", np.float),
-                                                    ("fwhm_image", np.float),
-                                                    ("ellipticity", np.float),
-                                                    ("background", np.float),
-                                                    ("flags", np.float),
-                                                    ("a_image", np.float),
-                                                    ("b_image", np.float),
-                                                    ("theta_image", np.float),
-                                                    ("petro_radius", np.float)])
+    s = np.genfromtxt(sexfile, comments="#", dtype=[("x", float),
+                                                    ("y", float),
+                                                    ("ra", float),
+                                                    ("dec", float),
+                                                    ("mag", float),
+                                                    ("magerr", float),
+                                                    ("fwhm_world", float),
+                                                    ("fwhm_image", float),
+                                                    ("ellipticity", float),
+                                                    ("background", float),
+                                                    ("flags", float),
+                                                    ("a_image", float),
+                                                    ("b_image", float),
+                                                    ("theta_image", float),
+                                                    ("petro_radius", float)])
 
     if s is None or s.ndim == 0 or len(s) == 0:
         print("Empty content of the file for file %s. " % sexfile)
